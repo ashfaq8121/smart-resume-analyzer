@@ -1,0 +1,20 @@
+Senior DevOps Engineer - AWS Cloud Platform
+Infrastructure Team
+
+Responsibilities:
+- Deploy containerized applications using Docker & Kubernetes (K8s)
+- Manage CI/CD pipelines with Jenkins, GitHub Actions, Terraform
+- Configure AWS services (EC2, S3, Lambda, RDS, CloudWatch)
+- Implement Infrastructure as Code (IaC) with Terraform/CloudFormation
+- Monitor applications using Prometheus + Grafana
+- Build and maintain microservices architecture on AWS EKS
+
+Requirements:
+- 3+ years Kubernetes/Docker production experience
+- AWS Certified Solutions Architect (Associate minimum)
+- Advanced Terraform + Ansible automation skills
+- Experience with ELK stack (Elasticsearch, Logstash, Kibana)
+- Strong Linux system administration background
+- Grafana dashboard creation for infrastructure monitoring
+
+Location: Bangalore, Karnataka

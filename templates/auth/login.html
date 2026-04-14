@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Login — Smart Resume Analyzer{% endblock %}
+{% block extra_css %}
+<style>
+    .auth-wrap{min-height:calc(100vh - 200px);display:flex;align-items:center;
+        justify-content:center;padding:2rem 1rem;}
+    .auth-card{width:100%;max-width:420px;background:var(--bg-card);
+        border:1px solid var(--border);border-radius:var(--radius-xl);
+        padding:2rem 1.75rem;box-shadow:var(--shadow-card);}
+    .auth-title{font-family:var(--font-display);font-size:1.6rem;font-weight:800;margin-bottom:0.2rem;}
+    .auth-sub{color:var(--text-secondary);font-size:0.88rem;margin-bottom:1.5rem;}
+    .form-group{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:1rem;}
+    .form-label{font-size:0.83rem;color:var(--text-secondary);font-weight:500;}
+    .form-input{width:100%;background:var(--bg-secondary);border:1px solid var(--border);
+        border-radius:var(--radius-md);padding:0.75rem 1rem;color:var(--text-primary);
+        font-size:0.95rem;font-family:var(--font-body);transition:var(--transition);}
+    .form-input:focus{outline:none;border-color:var(--accent-primary);
+        box-shadow:0 0 0 3px rgba(99,102,241,0.12);}
+    .form-input::placeholder{color:var(--text-muted);}
+    .auth-btn{width:100%;justify-content:center;margin-top:0.5rem;font-size:1rem;
+        padding:0.85rem;}
+    .auth-footer{text-align:center;margin-top:1.25rem;font-size:0.875rem;color:var(--text-muted);}
+    .auth-footer a{color:var(--accent-primary);text-decoration:none;}
+    .auth-footer a:hover{text-decoration:underline;}
+</style>
+{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+    <div class="auth-card fade-up">
+        <div class="auth-title">Welcome back 👋</div>
+        <div class="auth-sub">Log in to view your analysis history and track your progress.</div>
+        <form method="POST" action="/auth/login">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" required placeholder="you@email.com" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" required placeholder="Your password" class="form-input">
+            </div>
+            <button type="submit" class="btn btn-primary auth-btn">Log In →</button>
+        </form>
+        <div class="auth-footer">
+            New here? <a href="/auth/register">Create an account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

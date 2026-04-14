@@ -1,0 +1,64 @@
+FULL STACK DEVELOPER — JOB DESCRIPTION
+=======================================
+
+Company: TechVision Solutions Pvt. Ltd.
+Location: Hyderabad, India (Hybrid — 3 days office)
+Experience: 3–6 years
+Type: Full-Time
+
+ABOUT THE ROLE
+--------------
+We are looking for a skilled Full Stack Developer to join our product engineering team. You will design, build, and maintain scalable web applications from database to UI. You will work in an agile team of 10 engineers, collaborating closely with product managers, designers, and QA engineers to ship high-quality software.
+
+KEY RESPONSIBILITIES
+--------------------
+- Design and develop scalable RESTful APIs and microservices using Node.js and Python
+- Build responsive, high-performance frontend applications using React.js and TypeScript
+- Design and manage relational and NoSQL databases (PostgreSQL, MongoDB)
+- Deploy and maintain cloud infrastructure on AWS (EC2, S3, Lambda, RDS)
+- Containerise applications using Docker and orchestrate with Kubernetes
+- Set up and maintain CI/CD pipelines using GitHub Actions or Jenkins
+- Write clean, well-tested code with Jest (frontend) and Pytest (backend)
+- Participate in code reviews, architecture discussions, and sprint planning
+- Optimise application performance and ensure 99.9% uptime SLAs
+
+REQUIRED SKILLS
+---------------
+- Frontend: React.js, TypeScript, HTML5, CSS3, Redux or Context API
+- Backend: Node.js, Python (Django or FastAPI), REST APIs, GraphQL
+- Databases: PostgreSQL, MongoDB, Redis
+- Cloud: AWS (EC2, S3, RDS, Lambda) — hands-on experience required
+- DevOps: Docker, Kubernetes, CI/CD pipelines (GitHub Actions / Jenkins)
+- Version Control: Git, GitHub with PR-based workflow
+- Testing: Unit testing and integration testing (Jest, Pytest)
+- Soft Skills: Strong communication, teamwork, problem-solving, ability to work in agile environment
+
+NICE TO HAVE
+------------
+- Experience with Terraform or infrastructure as code
+- Familiarity with message queues (Redis, RabbitMQ, Kafka)
+- Open-source contributions or personal projects on GitHub
+- AWS certification (Solutions Architect or Developer)
+- Experience mentoring junior developers
+
+WHAT WE OFFER
+-------------
+- Competitive salary: 18–35 LPA based on experience
+- Flexible hybrid work policy
+- Health insurance and wellness benefits
+- Learning budget: Rs 50,000/year for courses and certifications
+- Annual performance bonus
+- Latest MacBook Pro provided
+
+EXPECTED RANKING (for your reference when testing)
+---------------------------------------------------
+Best Match    → Arjun Sharma     (Resume 01) — All skills + 6 yrs + AWS cert + K8s cert
+Strong        → Priya Nair       (Resume 02) — 4 yrs, React+Node+Python+AWS, no K8s
+Good          → Rohit Verma      (Resume 03) — 5 yrs, strong backend, basic K8s, less React
+Moderate      → Sneha Kulkarni   (Resume 04) — Angular not React, Java not Node, Azure not AWS
+Average       → Karan Mehta      (Resume 05) — 2 yrs, React+Node, no cloud depth
+Below Avg     → Anjali Singh     (Resume 06) — Frontend only, minimal backend
+Weak          → Dev Patel        (Resume 07) — 1 yr, learning phase
+Poor          → Meera Iyer       (Resume 08) — Data scientist, not web developer
+Very Poor     → Suresh Babu      (Resume 09) — PHP/jQuery, outdated tech stack
+No Match      → Tanvi Joshi      (Resume 10) — DevOps only, no full stack dev skills

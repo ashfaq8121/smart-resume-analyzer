@@ -1,0 +1,17 @@
+# render.yaml - Render.com deployment configuration
+# Just push this file to GitHub and connect to Render!
+
+services:
+  - type: web
+    name: smart-resume-analyzer
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python -m nltk.downloader stopwords punkt averaged_perceptron_tagger wordnet
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+    autoDeploy: true

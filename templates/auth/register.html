@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Register — Smart Resume Analyzer{% endblock %}
+{% block extra_css %}
+<style>
+    .auth-wrap{min-height:calc(100vh - 200px);display:flex;align-items:center;
+        justify-content:center;padding:2rem 1rem;}
+    .auth-card{width:100%;max-width:440px;background:var(--bg-card);
+        border:1px solid var(--border);border-radius:var(--radius-xl);
+        padding:2rem 1.75rem;box-shadow:var(--shadow-card);}
+    .auth-title{font-family:var(--font-display);font-size:1.6rem;font-weight:800;margin-bottom:0.2rem;}
+    .auth-sub{color:var(--text-secondary);font-size:0.88rem;margin-bottom:1.5rem;}
+    .form-group{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:1rem;}
+    .form-label{font-size:0.83rem;color:var(--text-secondary);font-weight:500;}
+    .form-hint{font-size:0.75rem;color:var(--text-muted);}
+    .form-input{width:100%;background:var(--bg-secondary);border:1px solid var(--border);
+        border-radius:var(--radius-md);padding:0.75rem 1rem;color:var(--text-primary);
+        font-size:0.95rem;font-family:var(--font-body);transition:var(--transition);}
+    .form-input:focus{outline:none;border-color:var(--accent-primary);
+        box-shadow:0 0 0 3px rgba(99,102,241,0.12);}
+    .form-input::placeholder{color:var(--text-muted);}
+    .auth-btn{width:100%;justify-content:center;margin-top:0.5rem;font-size:1rem;padding:0.85rem;}
+    .auth-footer{text-align:center;margin-top:1.25rem;font-size:0.875rem;color:var(--text-muted);}
+    .auth-footer a{color:var(--accent-primary);text-decoration:none;}
+    .auth-footer a:hover{text-decoration:underline;}
+    .perks{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:1.25rem;}
+    .perk{font-size:0.78rem;color:var(--text-secondary);
+        background:var(--bg-secondary);border:1px solid var(--border);
+        border-radius:var(--radius-sm);padding:0.45rem 0.6rem;
+        display:flex;align-items:center;gap:0.35rem;}
+</style>
+{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+    <div class="auth-card fade-up">
+        <div class="auth-title">Create Account 🚀</div>
+        <div class="auth-sub">Sign up free to save your analyses and track score improvements.</div>
+
+        <div class="perks">
+            <div class="perk">✅ Save analysis history</div>
+            <div class="perk">📈 Track score progress</div>
+            <div class="perk">📄 Download PDFs</div>
+            <div class="perk">🔒 Your data is private</div>
+        </div>
+
+        <form method="POST" action="/auth/register">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" required placeholder="Arjun Sharma" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" required placeholder="you@email.com" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password <span class="form-hint">(min 6 characters)</span></label>
+                <input type="password" name="password" required placeholder="Create a password" class="form-input">
+            </div>
+            <button type="submit" class="btn btn-primary auth-btn">Create Account →</button>
+        </form>
+        <div class="auth-footer">
+            Already have an account? <a href="/auth/login">Log in here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

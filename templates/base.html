@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}Smart Resume Analyzer{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary:#0a0b0f; --bg-secondary:#111318;
+            --bg-card:#16181f; --bg-card-hover:#1d2029;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-danger:#ef4444;
+            --accent-glow:rgba(99,102,241,0.15);
+            --text-primary:#f0f1f5; --text-secondary:#9ba3b8; --text-muted:#4b5268;
+            --border:#1e2130; --border-glow:rgba(99,102,241,0.3);
+            --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px;
+            --shadow-card:0 8px 32px rgba(0,0,0,0.4);
+            --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+            --transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+            --nav-h:64px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+        body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-primary);
+             min-height:100vh;line-height:1.6;overflow-x:hidden;}
+        body::before{content:'';position:fixed;top:-30%;left:-20%;width:60%;height:60%;
+            background:radial-gradient(ellipse,rgba(99,102,241,0.07) 0%,transparent 70%);
+            pointer-events:none;z-index:0;}
+        body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:50%;height:50%;
+            background:radial-gradient(ellipse,rgba(139,92,246,0.05) 0%,transparent 70%);
+            pointer-events:none;z-index:0;}
+
+        /* ── NAV ── */
+        nav{position:sticky;top:0;z-index:200;background:rgba(10,11,15,0.96);
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--border);padding:0 1.25rem;}
+        .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;
+            justify-content:space-between;height:var(--nav-h);}
+        .nav-logo{font-family:var(--font-display);font-size:1.2rem;font-weight:800;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+            text-decoration:none;display:flex;align-items:center;gap:0.4rem;flex-shrink:0;}
+        .nav-logo .icon{font-size:1.4rem;-webkit-text-fill-color:initial;}
+        .nav-links{display:flex;gap:0.2rem;align-items:center;}
+        .nav-link{color:var(--text-secondary);text-decoration:none;padding:0.5rem 0.9rem;
+            border-radius:var(--radius-sm);font-size:0.9rem;font-weight:500;
+            transition:var(--transition);white-space:nowrap;}
+        .nav-link:hover{color:var(--text-primary);background:var(--bg-card);}
+        .nav-user{color:var(--text-muted);font-size:0.85rem;font-weight:500;
+            padding:0.4rem 0.7rem;border:1px solid var(--border);border-radius:var(--radius-sm);
+            display:flex;align-items:center;gap:0.3rem;white-space:nowrap;}
+        .nav-link-logout{color:#fca5a5;}
+        .nav-link-logout:hover{background:rgba(239,68,68,.08);color:#ef4444;}
+        .nav-link-register{background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+            color:white!important;-webkit-text-fill-color:white;font-weight:600;padding:0.5rem 1rem;}
+        .nav-link-register:hover{opacity:0.85;}
+        .nav-divider{width:1px;height:18px;background:var(--border);margin:0 0.2rem;}
+
+        /* Hamburger */
+        .nav-hamburger{display:none;flex-direction:column;justify-content:center;align-items:center;
+            gap:5px;width:42px;height:42px;background:var(--bg-card);
+            border:1px solid var(--border);border-radius:var(--radius-sm);
+            cursor:pointer;padding:0;flex-shrink:0;}
+        .nav-hamburger span{display:block;width:20px;height:2px;background:var(--text-secondary);
+            border-radius:2px;transition:var(--transition);}
+        .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+        .nav-hamburger.open span:nth-child(2){opacity:0;}
+        .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+        /* Mobile drawer */
+        .nav-drawer{display:none;position:fixed;top:var(--nav-h);left:0;right:0;
+            background:rgba(10,11,15,0.98);backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--border);z-index:199;
+            padding:0.75rem 1rem 1.25rem;flex-direction:column;gap:0.25rem;}
+        .nav-drawer.open{display:flex;}
+        .nav-drawer .nav-link{font-size:1rem;padding:0.8rem 1rem;border-radius:var(--radius-md);}
+        .nav-drawer .nav-divider{width:100%;height:1px;margin:0.25rem 0;}
+        .nav-drawer .nav-user{padding:0.8rem 1rem;font-size:0.9rem;border-radius:var(--radius-md);}
+        .nav-drawer .nav-link-register{justify-content:center;text-align:center;
+            border-radius:var(--radius-md);padding:0.9rem 1rem;font-size:1rem;display:flex;}
+
+        /* ── LAYOUT ── */
+        .container{max-width:1100px;margin:0 auto;padding:0 1rem;position:relative;z-index:1;}
+        .page-section{padding:2.5rem 0;}
+
+        /* ── TYPOGRAPHY ── */
+        h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;}
+        .page-title{font-size:clamp(1.5rem,5vw,3.2rem);font-weight:800;line-height:1.15;}
+        .gradient-text{background:linear-gradient(135deg,#a5b4fc,var(--accent-primary),var(--accent-secondary));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .subtitle{font-size:1rem;color:var(--text-secondary);margin-top:0.75rem;max-width:560px;line-height:1.7;}
+
+        /* ── CARDS ── */
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+            padding:1.5rem;box-shadow:var(--shadow-card);transition:var(--transition);}
+        .card:hover{border-color:var(--border-glow);}
+        .card-title{font-family:var(--font-display);font-size:0.8rem;font-weight:600;
+            text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:1rem;}
+
+        /* ── BUTTONS ── */
+        .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.4rem;
+            border-radius:var(--radius-md);font-family:var(--font-body);font-size:0.95rem;
+            font-weight:600;cursor:pointer;transition:var(--transition);border:none;
+            text-decoration:none;white-space:nowrap;}
+        .btn-primary{background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+            color:white;box-shadow:0 4px 20px rgba(99,102,241,0.35);}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(99,102,241,0.5);}
+        .btn-outline{background:transparent;color:var(--text-secondary);border:1px solid var(--border);}
+        .btn-outline:hover{border-color:var(--border-glow);color:var(--text-primary);background:var(--bg-card);}
+        .btn-warning{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;
+            box-shadow:0 4px 20px rgba(245,158,11,0.3);}
+        .btn-warning:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,158,11,0.45);}
+
+        /* ── TAGS ── */
+        .tags-wrap{display:flex;flex-wrap:wrap;gap:0.4rem;}
+        .tag{display:inline-flex;align-items:center;padding:0.3rem 0.7rem;
+            border-radius:100px;font-size:0.8rem;font-weight:500;}
+        .tag-matched{background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.2);}
+        .tag-missing{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+        .tag-skill{background:rgba(99,102,241,.1);color:#a5b4fc;border:1px solid rgba(99,102,241,.2);}
+        .tag-keyword{background:rgba(245,158,11,.1);color:#fcd34d;border:1px solid rgba(245,158,11,.2);}
+
+        /* ── PROGRESS ── */
+        .progress-bar{height:6px;background:var(--bg-secondary);border-radius:100px;overflow:hidden;}
+        .progress-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+
+        /* ── FLASH ── */
+        .flash-messages{max-width:1100px;margin:0.75rem auto;padding:0 1rem;}
+        .flash{padding:0.9rem 1rem;border-radius:var(--radius-md);margin-bottom:0.5rem;
+            font-size:0.88rem;font-weight:500;display:flex;align-items:center;gap:0.5rem;}
+        .flash-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;}
+        .flash-warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:#fcd34d;}
+        .flash-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#6ee7b7;}
+        .flash-info{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#a5b4fc;}
+
+        /* ── LOADING ── */
+        .loading-overlay{position:fixed;inset:0;background:rgba(10,11,15,0.85);
+            backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;
+            z-index:9999;flex-direction:column;gap:1.5rem;padding:2rem;}
+        .loading-overlay.active{display:flex;}
+        .spinner{width:52px;height:52px;border:3px solid var(--border);
+            border-top-color:var(--accent-primary);border-radius:50%;
+            animation:spin 0.9s linear infinite;}
+        .loading-text{font-family:var(--font-display);color:var(--text-secondary);
+            font-size:0.95rem;text-align:center;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+
+        /* ── FOOTER ── */
+        footer{border-top:1px solid var(--border);padding:1.75rem 1rem;text-align:center;
+            color:var(--text-muted);font-size:0.82rem;margin-top:3rem;position:relative;z-index:1;}
+        footer a{color:var(--accent-primary);text-decoration:none;}
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+        .fade-up{animation:fadeUp 0.55s ease forwards;}
+        .fade-up-d1{animation-delay:0.08s;opacity:0;}
+        .fade-up-d2{animation-delay:0.16s;opacity:0;}
+        .fade-up-d3{animation-delay:0.24s;opacity:0;}
+        .fade-up-d4{animation-delay:0.32s;opacity:0;}
+
+        /* ── UTILITIES ── */
+        .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+        .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+        .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+        .flex{display:flex;} .flex-wrap{flex-wrap:wrap;}
+        .flex-center{display:flex;align-items:center;justify-content:center;}
+        .gap-1{gap:0.5rem;} .gap-2{gap:1rem;}
+        .mt-1{margin-top:0.5rem;} .mt-2{margin-top:1rem;}
+        .mt-3{margin-top:1.5rem;} .mt-4{margin-top:2rem;}
+        .mb-1{margin-bottom:0.5rem;} .mb-2{margin-bottom:1rem;} .mb-3{margin-bottom:1.5rem;}
+        .text-center{text-align:center;} .text-sm{font-size:0.875rem;}
+        .text-muted{color:var(--text-muted);} .text-secondary{color:var(--text-secondary);}
+        .text-success{color:var(--accent-success);} .text-danger{color:var(--accent-danger);}
+        .text-warning{color:var(--accent-warning);}
+        .divider{height:1px;background:var(--border);margin:1.5rem 0;}
+        .w-full{width:100%;}
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:900px){
+            .grid-4{grid-template-columns:repeat(2,1fr);}
+            .grid-3{grid-template-columns:repeat(2,1fr);}
+        }
+        @media(max-width:640px){
+            .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+            .container{padding:0 0.85rem;}
+            .card{padding:1rem;}
+            .btn{font-size:0.88rem;padding:0.65rem 1rem;}
+            .nav-links{display:none;}
+            .nav-hamburger{display:flex;}
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="nav-logo"><span class="icon">🧠</span>ResumeIQ</a>
+            <!-- Desktop -->
+            <div class="nav-links">
+                <a href="/" class="nav-link">Analyze</a>
+                <a href="/#rank-section" class="nav-link">Rank</a>
+                <a href="/#how-it-works" class="nav-link">How it Works</a>
+                <div class="nav-divider"></div>
+                {% if current_user.is_authenticated %}
+                    <a href="/history" class="nav-link">📚 History</a>
+                    <span class="nav-user">👤 {{ current_user.name }}</span>
+                    <a href="/auth/logout" class="nav-link nav-link-logout">Logout</a>
+                {% else %}
+                    <a href="/auth/login" class="nav-link">Login</a>
+                    <a href="/auth/register" class="nav-link nav-link-register">Register</a>
+                {% endif %}
+            </div>
+            <!-- Hamburger -->
+            <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile drawer -->
+    <div class="nav-drawer" id="navDrawer">
+        <a href="/" class="nav-link">📄 Analyze Resume</a>
+        <a href="/#rank-section" class="nav-link">🏆 Rank Candidates</a>
+        <a href="/#how-it-works" class="nav-link">💡 How it Works</a>
+        <div class="nav-divider"></div>
+        {% if current_user.is_authenticated %}
+            <a href="/history" class="nav-link">📚 My History</a>
+            <span class="nav-user">👤 {{ current_user.name }}</span>
+            <a href="/auth/logout" class="nav-link nav-link-logout">🚪 Logout</a>
+        {% else %}
+            <a href="/auth/login" class="nav-link">🔑 Login</a>
+            <a href="/auth/register" class="nav-link nav-link-register">🚀 Create Account</a>
+        {% endif %}
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                {% if category == 'error' %}⛔{% elif category == 'warning' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="loading-text" id="loadingText">Analyzing your resume...</p>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>Smart Resume Analyzer &bull; Built with Flask, NLP &amp; Machine Learning</p>
+        <p class="mt-1">TF-IDF · Cosine Similarity · spaCy · scikit-learn</p>
+    </footer>
+
+    <script>
+        const hamburger=document.getElementById('navHamburger');
+        const drawer=document.getElementById('navDrawer');
+        hamburger.addEventListener('click',()=>{
+            hamburger.classList.toggle('open');
+            drawer.classList.toggle('open');
+        });
+        drawer.querySelectorAll('a').forEach(l=>l.addEventListener('click',()=>{
+            hamburger.classList.remove('open');drawer.classList.remove('open');
+        }));
+        document.querySelectorAll('form').forEach(form=>{
+            form.addEventListener('submit',function(){
+                document.getElementById('loadingOverlay').classList.add('active');
+                const isRank=this.querySelector('[name="resumes"]');
+                document.getElementById('loadingText').textContent=isRank
+                    ?'🏆 Ranking all candidates...':'🔍 Analyzing your resume...';
+            });
+        });
+        function animateRings(){
+            document.querySelectorAll('.score-ring-fill').forEach(fill=>{
+                const t=fill.dataset.target;if(!t)return;
+                const c=2*Math.PI*52;
+                fill.style.strokeDasharray=c;fill.style.strokeDashoffset=c;
+                setTimeout(()=>{fill.style.strokeDashoffset=c-(t/100)*c;},300);
+            });
+        }
+        function animateBars(){
+            document.querySelectorAll('.progress-fill[data-width]').forEach(bar=>{
+                bar.style.width='0%';
+                setTimeout(()=>{bar.style.width=bar.dataset.width+'%';},400);
+            });
+        }
+        window.addEventListener('load',()=>{animateRings();animateBars();});
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

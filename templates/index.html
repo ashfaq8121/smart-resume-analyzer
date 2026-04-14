@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% block title %}Smart Resume Analyzer - Upload & Analyze{% endblock %}
+{% block extra_css %}
+<style>
+    /* ===== ADDED: Mobile-First Responsive Base ===== */
+    * { box-sizing: border-box; }
+    html { 
+        -webkit-text-size-adjust: 100%; 
+        text-size-adjust: 100%; 
+    }
+    body { 
+        line-height: 1.6; 
+        font-size: 16px; 
+        min-height: 100vh; 
+    }
+    
+    /* Mobile-first container */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+    
+    /* Touch-friendly buttons & inputs */
+    button, input, textarea, select {
+        font-size: 16px;
+        min-height: 44px;
+        width: 100%;
+    }
+    
+    img, video { max-width: 100%; height: auto; display: block; }
+    
+    /* ===== YOUR ORIGINAL STYLES (UNCHANGED) ===== */
+    .hero{padding:3rem 0 2rem;text-align:center;}
+    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;
+        background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);
+        color:#a5b4fc;padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;
+        font-weight:600;margin-bottom:1.25rem;letter-spacing:0.05em;text-transform:uppercase;}
+    .hero-stats{display:flex;justify-content:center;flex-wrap:wrap;
+        gap:1.5rem 2.5rem;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border);}
+    .hero-stat{text-align:center;}
+    .hero-stat-number{font-family:var(--font-display);font-size:1.4rem;font-weight:800;
+        background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-stat-label{font-size:0.78rem;color:var(--text-muted);margin-top:0.15rem;}
+
+    /* Tabs */
+    .tabs-container{margin:2rem 0;}
+    .tab-header{display:flex;gap:0.4rem;background:var(--bg-secondary);
+        padding:0.35rem;border-radius:var(--radius-md);margin-bottom:1.25rem;
+        border:1px solid var(--border);}
+    .tab-btn{flex:1;padding:0.65rem 0.75rem;border-radius:10px;border:none;
+        background:transparent;color:var(--text-secondary);font-family:var(--font-display);
+        font-size:0.82rem;font-weight:600;cursor:pointer;transition:var(--transition);
+        display:flex;align-items:center;justify-content:center;gap:0.4rem;line-height:1.3;
+        text-align:center;}
+    .tab-btn.active{background:var(--bg-card);color:var(--text-primary);
+        box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* Form grid — 2 col desktop, 1 col mobile */
+    .form-grid{display:grid;grid-template-columns:1fr;gap:1.25rem;}
+    .form-panel{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:1.5rem;}
+    .form-panel-title{font-family:var(--font-display);font-size:0.95rem;font-weight:700;
+        color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+
+    /* Dropzone */
+    .dropzone{border:2px dashed var(--border);border-radius:var(--radius-md);
+        padding:2rem 1rem;text-align:center;cursor:pointer;
+        transition:var(--transition);position:relative;min-height:140px;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .dropzone:hover,.dropzone.drag-over{border-color:var(--accent-primary);background:var(--accent-glow);}
+    .dropzone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .dropzone-icon{font-size:2rem;margin-bottom:0.5rem;}
+    .dropzone-title{font-family:var(--font-display);font-weight:700;font-size:0.95rem;margin-bottom:0.25rem;}
+    .dropzone-sub{font-size:0.78rem;color:var(--text-muted);}
+    .file-preview{margin-top:0.75rem;display:none;background:rgba(16,185,129,0.08);
+        border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-sm);
+        padding:0.6rem 0.9rem;}
+    .file-preview.show{display:flex;align-items:center;gap:0.6rem;}
+    .file-preview-name{font-size:0.85rem;color:var(--accent-success);font-weight:500;
+        word-break:break-all;}
+
+    /* Textarea */
+    .form-textarea{width:100%;background:var(--bg-secondary);border:1px solid var(--border);
+        border-radius:var(--radius-md);padding:0.9rem;color:var(--text-primary);
+        font-family:var(--font-body);font-size:0.88rem;resize:vertical;
+        min-height:200px;transition:var(--transition);line-height:1.6;}
+    .form-textarea:focus{outline:none;border-color:var(--accent-primary);
+        box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+    .form-textarea::placeholder{color:var(--text-muted);}
+
+    /* Submit */
+    .submit-area{margin-top:1.25rem;display:flex;align-items:center;
+        justify-content:space-between;gap:1rem;flex-wrap:wrap;
+        padding:1rem 1.25rem;background:var(--bg-secondary);
+        border-radius:var(--radius-md);border:1px solid var(--border);}
+    .submit-hint{font-size:0.78rem;color:var(--text-muted);flex:1;min-width:0;}
+    .btn-analyze{background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        color:white;border:none;padding:0.8rem 1.75rem;border-radius:var(--radius-md);
+        font-family:var(--font-display);font-size:0.92rem;font-weight:700;cursor:pointer;
+        transition:var(--transition);display:flex;align-items:center;gap:0.5rem;
+        box-shadow:0 4px 20px rgba(99,102,241,0.35);white-space:nowrap;flex-shrink:0;}
+    .btn-analyze:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(99,102,241,0.5);}
+
+    /* Multi-file list */
+    .files-list{margin-top:0.75rem;display:flex;flex-direction:column;gap:0.35rem;}
+    .file-item{display:flex;align-items:center;gap:0.5rem;background:var(--bg-secondary);
+        border:1px solid rgba(99,102,241,0.15);border-radius:var(--radius-sm);
+        padding:0.45rem 0.7rem;font-size:0.82rem;}
+    .file-item-icon{color:var(--accent-primary);}
+    .file-item-name{flex:1;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .file-item-size{color:var(--text-muted);font-size:0.72rem;flex-shrink:0;}
+
+    /* How it works */
+    .how-steps{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem;}
+    .how-step{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:1.25rem;text-align:center;
+        transition:var(--transition);}
+    .how-step:hover{border-color:var(--border-glow);}
+    .step-number{font-family:var(--font-display);font-size:0.72rem;font-weight:800;
+        color:var(--accent-primary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;}
+    .step-icon{font-size:1.75rem;margin-bottom:0.5rem;}
+    .step-title{font-family:var(--font-display);font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;}
+    .step-desc{font-size:0.78rem;color:var(--text-secondary);line-height:1.5;}
+
+    /* ===== ENHANCED RESPONSIVE BREAKPOINTS ===== */
+    @media(min-width: 768px){
+        .form-grid{grid-template-columns:1fr 1fr;}
+        .hero-stats{gap:1.5rem 2.5rem;}
+        .submit-area{flex-direction:row;align-items:center;justify-content:space-between;}
+        .btn-analyze{width:auto;justify-content:center;}
+        .submit-hint{text-align:left;flex:1;}
+    }
+    
+    @media(min-width: 1024px){
+        .how-steps{grid-template-columns:repeat(4,1fr);}
+        .hero{padding:4rem 0 3rem;}
+    }
+    
+    @media(max-width:420px){
+        .tab-btn{font-size:0.75rem;padding:0.55rem 0.4rem;gap:0.25rem;}
+        .container{padding:0 12px;}
+        .hero{padding:2rem 0 1.5rem;}
+    }
+    
+    /* Landscape mobile fix */
+    @media(max-height:500px) and (orientation:landscape){
+        .dropzone{padding:1rem;}
+        .form-textarea{min-height:120px;}
+    }
+</style>
+{% endblock %}
+
+<!-- ADD THIS TO YOUR BASE.HTML <head> SECTION (if not already there) -->
+<!--
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+-->
+
+{% block content %}
+<!-- YOUR EXACT CONTENT (UNCHANGED) -->
+<div class="container">
+    <section class="hero fade-up">
+        <div class="hero-badge">✨ AI-Powered Resume Analysis</div>
+        <h1 class="page-title">
+            Know Your <span class="gradient-text">Exact Match</span><br>
+            Before You Apply
+        </h1>
+        <p class="subtitle" style="margin:0.75rem auto 0;">
+            Upload your resume and paste any job description. Our NLP engine analyzes
+            skills, calculates similarity, and shows exactly what you're missing.
+        </p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number">TF-IDF</div>
+                <div class="hero-stat-label">Similarity Engine</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">200+</div>
+                <div class="hero-stat-label">Skills Tracked</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">7</div>
+                <div class="hero-stat-label">Skill Categories</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">PDF/DOCX</div>
+                <div class="hero-stat-label">Formats Supported</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="tabs-container fade-up fade-up-d1">
+        <div class="tab-header">
+            <button class="tab-btn active" onclick="switchTab('single',this)">
+                📄 Single Resume
+            </button>
+            <button class="tab-btn" onclick="switchTab('multi',this)" id="rank-section">
+                🏆 Rank Multiple
+            </button>
+        </div>
+
+        <!-- Tab 1 -->
+        <div class="tab-panel active" id="tab-single">
+            <form method="POST" action="/analyze" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-panel">
+                        <div class="form-panel-title">📎 Upload Resume</div>
+                        <div class="dropzone" id="dropzone-single">
+                            <input type="file" name="resume" accept=".pdf,.docx"
+                                   id="resumeInput" onchange="previewFile(this,'preview-single')">
+                            <div class="dropzone-icon">📄</div>
+                            <div class="dropzone-title">Tap to choose file</div>
+                            <div class="dropzone-sub">PDF or DOCX • Max 16 MB</div>
+                        </div>
+                        <div class="file-preview" id="preview-single">
+                            <span>✅</span>
+                            <span class="file-preview-name" id="preview-name-single"></span>
+                        </div>
+                    </div>
+                    <div class="form-panel">
+                        <div class="form-panel-title">💼 Job Description</div>
+                        <textarea name="job_description" class="form-textarea"
+                                  placeholder="Paste the full job description here...&#10;&#10;e.g. We are looking for a Python Developer with Django, REST APIs, PostgreSQL..."
+                                  required></textarea>
+                    </div>
+                </div>
+                <div class="submit-area">
+                    <span class="submit-hint">🔒 Your resume is never stored permanently.</span>
+                    <button type="submit" class="btn-analyze">🔍 Analyze Resume</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tab 2 -->
+        <div class="tab-panel" id="tab-multi">
+            <form method="POST" action="/rank" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-panel">
+                        <div class="form-panel-title">📂 Upload Multiple Resumes</div>
+                        <div class="dropzone" id="dropzone-multi">
+                            <input type="file" name="resumes" accept=".pdf,.docx" multiple
+                                   id="resumesInput" onchange="previewMultiFiles(this)">
+                            <div class="dropzone-icon">📂</div>
+                            <div class="dropzone-title">Tap to choose files</div>
+                            <div class="dropzone-sub">Select 2–10 files • PDF or DOCX</div>
+                        </div>
+                        <div class="files-list" id="multi-files-list"></div>
+                    </div>
+                    <div class="form-panel">
+                        <div class="form-panel-title">💼 Job Description</div>
+                        <textarea name="job_description" class="form-textarea"
+                                  placeholder="Paste the job description to rank candidates against..."
+                                  required></textarea>
+                    </div>
+                </div>
+                <div class="submit-area">
+                    <span class="submit-hint">🏆 Ranked by TF-IDF + Skills + Experience scoring.</span>
+                    <button type="submit" class="btn-analyze">🏆 Rank All Candidates</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <section class="page-section fade-up fade-up-d2" id="how-it-works">
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:0.4rem;">How It Works</h2>
+        <p class="text-secondary text-sm">Under the hood in 4 steps</p>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="step-number">Step 1</div>
+                <div class="step-icon">📄</div>
+                <div class="step-title">Parse Resume</div>
+                <div class="step-desc">PyPDF2 & python-docx extract text from your file</div>
+            </div>
+            <div class="how-step">
+                <div class="step-number">Step 2</div>
+                <div class="step-icon">🧠</div>
+                <div class="step-title">NLP Processing</div>
+                <div class="step-desc">NLTK tokenizes, removes stopwords & lemmatizes</div>
+            </div>
+            <div class="how-step">
+                <div class="step-number">Step 3</div>
+                <div class="step-icon">🎯</div>
+                <div class="step-title">Skill Extraction</div>
+                <div class="step-desc">Matches against 200+ known skills</div>
+            </div>
+            <div class="how-step">
+                <div class="step-number">Step 4</div>
+                <div class="step-icon">📊</div>
+                <div class="step-title">TF-IDF Match</div>
+                <div class="step-desc">Cosine similarity gives precise match %</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- YOUR ORIGINAL JAVASCRIPT (UNCHANGED) -->
+<script>
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('tab-'+tab).classList.add('active');
+        btn.classList.add('active');
+    }
+    function previewFile(input, previewId) {
+        if (input.files.length > 0) {
+            document.getElementById(previewId).classList.add('show');
+            document.getElementById('preview-name-'+previewId.split('-')[1]).textContent = input.files[0].name;
+        }
+    }
+    function previewMultiFiles(input) {
+        const list = document.getElementById('multi-files-list');
+        list.innerHTML = '';
+        Array.from(input.files).forEach(file => {
+            const size = (file.size/1024).toFixed(0);
+            list.innerHTML += `<div class="file-item">
+                <span class="file-item-icon">📄</span>
+                <span class="file-item-name">${file.name}</span>
+                <span class="file-item-size">${size} KB</span>
+            </div>`;
+        });
+    }
+    ['dropzone-single','dropzone-multi'].forEach(id => {
+        const dz = document.getElementById(id);
+        if (!dz) return;
+        dz.addEventListener('dragover', e=>{e.preventDefault();dz.classList.add('drag-over');});
+        dz.addEventListener('dragleave', ()=>dz.classList.remove('drag-over'));
+        dz.addEventListener('drop', ()=>dz.classList.remove('drag-over'));
+    });
+</script>
+{% endblock %}

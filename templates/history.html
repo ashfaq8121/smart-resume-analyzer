@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}My History — Smart Resume Analyzer{% endblock %}
+{% block extra_css %}
+<style>
+    .history-header{padding:1.5rem 0 1rem;display:flex;align-items:flex-start;
+        justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1.5rem;}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:1.1rem 1.25rem;
+        display:flex;flex-direction:column;gap:0.2rem;}
+    .stat-label{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;
+        letter-spacing:0.07em;font-weight:600;}
+    .stat-value{font-family:var(--font-display);font-size:1.9rem;font-weight:800;
+        background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        background-clip:text;line-height:1.1;}
+    .stat-sub{font-size:0.75rem;color:var(--text-secondary);}
+
+    /* Table wrapper with horizontal scroll on small screens */
+    .history-table-wrap{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);overflow:hidden;}
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .history-table{width:100%;border-collapse:collapse;min-width:520px;}
+    .history-table thead{background:var(--bg-secondary);}
+    .history-table th{padding:0.85rem 1rem;text-align:left;font-size:0.72rem;
+        font-weight:600;text-transform:uppercase;letter-spacing:0.08em;
+        color:var(--text-muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+    .history-table td{padding:0.9rem 1rem;font-size:0.88rem;color:var(--text-secondary);
+        border-bottom:1px solid var(--border);vertical-align:top;}
+    .history-table tr:last-child td{border-bottom:none;}
+    .history-table tbody tr:hover{background:var(--bg-card-hover);}
+    .resume-name{font-weight:600;color:var(--text-primary);display:flex;
+        align-items:center;gap:0.4rem;word-break:break-word;}
+    .jd-text{font-size:0.83rem;color:var(--text-secondary);line-height:1.5;max-width:300px;}
+    .jd-toggle{font-size:0.75rem;color:var(--accent-primary);cursor:pointer;
+        border:none;background:none;padding:0;margin-top:0.25rem;
+        display:inline-block;font-family:var(--font-body);}
+    .jd-toggle:hover{text-decoration:underline;}
+    .jd-full{display:none;margin-top:0.4rem;font-size:0.8rem;color:var(--text-secondary);
+        line-height:1.6;max-height:140px;overflow-y:auto;background:var(--bg-secondary);
+        border-radius:var(--radius-sm);padding:0.6rem;border:1px solid var(--border);
+        white-space:pre-wrap;word-break:break-word;}
+    .score-badge{display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.7rem;
+        border-radius:100px;font-family:var(--font-display);font-size:0.88rem;
+        font-weight:700;white-space:nowrap;}
+    .score-high{background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.25);}
+    .score-medium{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.25);}
+    .score-low{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2);}
+    .date-cell{font-size:0.78rem;color:var(--text-muted);white-space:nowrap;}
+
+    /* Empty state */
+    .empty-state{text-align:center;padding:3rem 1.5rem;}
+    .empty-icon{font-size:3rem;margin-bottom:0.75rem;}
+    .empty-title{font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:0.4rem;}
+    .empty-sub{color:var(--text-secondary);font-size:0.88rem;margin-bottom:1.25rem;}
+
+    @media(max-width:768px){
+        .stats-row{grid-template-columns:1fr 1fr;}
+        .stats-row .stat-card:last-child{grid-column:span 2;}
+    }
+    @media(max-width:480px){
+        .stats-row{grid-template-columns:1fr;}
+        .stats-row .stat-card:last-child{grid-column:auto;}
+        .history-header{flex-direction:column;}
+        .history-header .btn{align-self:flex-start;}
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="history-header fade-up">
+        <div>
+            <h1 style="font-family:var(--font-display);font-size:clamp(1.3rem,4vw,1.8rem);font-weight:800;">
+                📚 My Analysis History
+            </h1>
+            <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:0.25rem;">
+                Welcome, <strong>{{ user_name }}</strong> — all your resume analyses are saved here.
+            </p>
+        </div>
+        <a href="/" class="btn btn-primary">🔍 Analyze New Resume</a>
+    </div>
+
+    <div class="stats-row fade-up fade-up-d1">
+        <div class="stat-card">
+            <span class="stat-label">Total Uploaded</span>
+            <span class="stat-value">{{ total_count }}</span>
+            <span class="stat-sub">across all job descriptions</span>
+        </div>
+        {% if records %}
+        <div class="stat-card">
+            <span class="stat-label">Best Score</span>
+            <span class="stat-value">{{ "%.1f"|format(records|map(attribute='overall_score')|list|max) }}%</span>
+            <span class="stat-sub">highest match achieved</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Average Score</span>
+            <span class="stat-value">{{ "%.1f"|format(records|map(attribute='overall_score')|list|sum / total_count) }}%</span>
+            <span class="stat-sub">across all analyses</span>
+        </div>
+        {% else %}
+        <div class="stat-card"><span class="stat-label">Best Score</span><span class="stat-value">—</span><span class="stat-sub">no data yet</span></div>
+        <div class="stat-card"><span class="stat-label">Average Score</span><span class="stat-value">—</span><span class="stat-sub">no data yet</span></div>
+        {% endif %}
+    </div>
+
+    {% if records %}
+    <div class="history-table-wrap fade-up fade-up-d2">
+        <div class="table-scroll">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th style="width:4%;">#</th>
+                        <th style="width:22%;">Resume</th>
+                        <th style="width:38%;">Job Description</th>
+                        <th style="width:15%;">Score</th>
+                        <th style="width:21%;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td style="color:var(--text-muted);font-size:0.8rem;">{{ loop.index }}</td>
+                        <td>
+                            <div class="resume-name">
+                                <span>📄</span>
+                                <span>{{ record.filename }}</span>
+                            </div>
+                            {% if record.resume_text %}
+                            <button class="jd-toggle" onclick="toggleSection(this)">▼ Show resume text</button>
+                            <div class="jd-full">{{ record.resume_text[:1000] }}{% if record.resume_text|length > 1000 %}...{% endif %}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="jd-text">{{ record.job_description_preview(120) }}</div>
+                            {% if record.job_description|length > 120 %}
+                            <button class="jd-toggle" onclick="toggleSection(this)">▼ Show full description</button>
+                            <div class="jd-full">{{ record.job_description }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="score-badge {% if record.overall_score>=70 %}score-high{% elif record.overall_score>=45 %}score-medium{% else %}score-low{% endif %}">
+                                {{ record.score_display() }}
+                            </span>
+                        </td>
+                        <td class="date-cell">{{ record.uploaded_at_display() }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.6rem;text-align:right;">
+        {{ total_count }} record{{ 's' if total_count != 1 else '' }} — newest first
+    </p>
+    {% else %}
+    <div class="card fade-up fade-up-d2">
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">No analyses yet</div>
+            <div class="empty-sub">Upload your first resume and paste a job description to get started. Every analysis is automatically saved here.</div>
+            <a href="/" class="btn btn-primary">🔍 Analyze Your First Resume</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script>
+    function toggleSection(btn) {
+        const full = btn.nextElementSibling;
+        const hidden = full.style.display !== 'block';
+        full.style.display = hidden ? 'block' : 'none';
+        btn.textContent = hidden
+            ? (btn.textContent.includes('resume') ? '▲ Hide resume text' : '▲ Hide description')
+            : (btn.textContent.includes('resume') ? '▼ Show resume text' : '▼ Show full description');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Candidate Rankings - Smart Resume Analyzer{% endblock %}
+{% block extra_css %}
+<style>
+    .rank-header{padding:1.5rem 0 1rem;}
+    .insights-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1.5rem;}
+    .insight-card{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:1rem;text-align:center;}
+    .insight-value{font-family:var(--font-display);font-size:1.7rem;font-weight:800;
+        background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .insight-label{font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;}
+    .candidates-list{display:flex;flex-direction:column;gap:0.75rem;}
+    .candidate-card{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:1.25rem;
+        display:grid;grid-template-columns:52px 1fr auto;gap:1rem;
+        align-items:center;transition:var(--transition);}
+    .candidate-card:hover{border-color:var(--border-glow);}
+    .candidate-card.rank-1{border-color:rgba(245,158,11,0.4);
+        background:linear-gradient(135deg,rgba(245,158,11,0.05),var(--bg-card));}
+    .rank-badge{width:48px;height:48px;border-radius:50%;display:flex;
+        align-items:center;justify-content:center;font-family:var(--font-display);
+        font-size:1.2rem;font-weight:800;flex-shrink:0;}
+    .rank-1-badge{background:rgba(245,158,11,0.2);color:#f59e0b;border:2px solid rgba(245,158,11,0.4);}
+    .rank-2-badge{background:rgba(156,163,175,0.15);color:#9ca3af;border:2px solid rgba(156,163,175,0.3);}
+    .rank-3-badge{background:rgba(180,120,80,0.15);color:#b47250;border:2px solid rgba(180,120,80,0.3);}
+    .rank-n-badge{background:var(--bg-secondary);color:var(--text-muted);border:2px solid var(--border);}
+    .candidate-info{min-width:0;}
+    .candidate-name{font-family:var(--font-display);font-size:0.95rem;font-weight:700;
+        overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .tier-badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.65rem;
+        border-radius:100px;font-size:0.72rem;font-weight:600;margin-top:0.2rem;}
+    .candidate-skills{display:flex;flex-wrap:wrap;gap:0.25rem;margin-top:0.4rem;}
+    .candidate-scores{text-align:right;flex-shrink:0;}
+    .main-score{font-family:var(--font-display);font-size:1.8rem;font-weight:800;line-height:1;}
+    .score-breakdown{display:flex;flex-direction:column;gap:0.2rem;margin-top:0.4rem;}
+    .score-mini{font-size:0.72rem;color:var(--text-muted);display:flex;
+        justify-content:flex-end;gap:0.4rem;}
+    .score-mini-val{font-weight:600;color:var(--text-secondary);}
+    .commonly-missing{background:var(--bg-card);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:1.25rem;margin-top:1.25rem;}
+
+    @media(max-width:900px){.insights-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:640px){
+        .insights-grid{grid-template-columns:repeat(2,1fr);}
+        .candidate-card{grid-template-columns:44px 1fr;}
+        .candidate-scores{display:none;}
+        /* Show score inline in candidate info on mobile */
+        .candidate-score-mobile{display:block;font-family:var(--font-display);
+            font-size:1.1rem;font-weight:800;margin-top:0.25rem;}
+    }
+    @media(min-width:641px){.candidate-score-mobile{display:none;}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="rank-header fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;">
+            <div>
+                <h1 class="page-title" style="font-size:clamp(1.3rem,4vw,2rem);">🏆 Candidate Rankings</h1>
+                <p class="subtitle" style="font-size:0.88rem;margin-top:0.25rem;">
+                    Ranked {{ results.candidates|length }} candidates by TF-IDF, skills & experience
+                </p>
+            </div>
+            <a href="/" class="btn btn-outline">← Upload More</a>
+        </div>
+    </div>
+
+    {% if results.insights %}
+    <div class="insights-grid fade-up fade-up-d1">
+        <div class="insight-card">
+            <div class="insight-value">{{ results.insights.total_candidates }}</div>
+            <div class="insight-label">Candidates</div>
+        </div>
+        <div class="insight-card">
+            <div class="insight-value">{{ results.insights.average_score }}%</div>
+            <div class="insight-label">Avg Score</div>
+        </div>
+        <div class="insight-card">
+            <div class="insight-value">{{ results.insights.highest_score }}%</div>
+            <div class="insight-label">Top Score</div>
+        </div>
+        <div class="insight-card">
+            <div class="insight-value">{{ results.insights.score_distribution.excellent }}</div>
+            <div class="insight-label">Excellent (80%+)</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="candidates-list fade-up fade-up-d2">
+        {% for candidate in results.candidates %}
+        <div class="candidate-card {% if candidate.rank==1 %}rank-1{% endif %}">
+            <div class="rank-badge {% if candidate.rank==1 %}rank-1-badge{% elif candidate.rank==2 %}rank-2-badge{% elif candidate.rank==3 %}rank-3-badge{% else %}rank-n-badge{% endif %}">
+                {% if candidate.rank==1 %}🥇{% elif candidate.rank==2 %}🥈{% elif candidate.rank==3 %}🥉{% else %}#{{ candidate.rank }}{% endif %}
+            </div>
+            <div class="candidate-info">
+                <div class="candidate-name">{{ candidate.filename }}</div>
+                {% if candidate.tier %}
+                <div><span class="tier-badge" style="background:{{ candidate.tier.bg }};color:{{ candidate.tier.color }};border:1px solid {{ candidate.tier.color }}40;">{{ candidate.tier.label }}</span></div>
+                {% endif %}
+                {% if not candidate.error %}
+                <!-- Score shown inline on mobile -->
+                <div class="candidate-score-mobile" style="color:{% if candidate.composite_score>=75 %}var(--accent-success){% elif candidate.composite_score>=55 %}var(--accent-warning){% else %}var(--accent-danger){% endif %};">
+                    {{ candidate.composite_score }}%
+                </div>
+                <div class="candidate-skills">
+                    {% for skill in candidate.matched_skills[:5] %}
+                    <span class="tag tag-matched" style="font-size:0.7rem;padding:0.15rem 0.45rem;">{{ skill }}</span>
+                    {% endfor %}
+                    {% if candidate.matched_skills|length > 5 %}
+                    <span class="tag tag-skill" style="font-size:0.7rem;padding:0.15rem 0.45rem;">+{{ candidate.matched_skills|length-5 }} more</span>
+                    {% endif %}
+                </div>
+                {% if candidate.missing_skills %}
+                <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem;">
+                    Missing: {% for skill in candidate.missing_skills[:3] %}<span style="color:#fca5a5;">{{ skill }}</span>{% if not loop.last %}, {% endif %}{% endfor %}{% if candidate.missing_skills|length>3 %} +{{ candidate.missing_skills|length-3 }}{% endif %}
+                </p>
+                {% endif %}
+                {% else %}
+                <p style="color:var(--accent-danger);font-size:0.82rem;margin-top:0.4rem;">⛔ {{ candidate.error }}</p>
+                {% endif %}
+            </div>
+            {% if not candidate.error %}
+            <div class="candidate-scores">
+                <div class="main-score" style="color:{% if candidate.composite_score>=75 %}var(--accent-success){% elif candidate.composite_score>=55 %}var(--accent-warning){% else %}var(--accent-danger){% endif %};">{{ candidate.composite_score }}%</div>
+                <div class="score-breakdown">
+                    <div class="score-mini"><span>TF-IDF</span><span class="score-mini-val">{{ candidate.tfidf_score }}%</span></div>
+                    <div class="score-mini"><span>Skills</span><span class="score-mini-val">{{ candidate.skills_score }}%</span></div>
+                    {% if candidate.experience_years>0 %}<div class="score-mini"><span>Exp</span><span class="score-mini-val">{{ candidate.experience_years }}y</span></div>{% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if results.insights and results.insights.commonly_missing_skills %}
+    <div class="commonly-missing fade-up fade-up-d3">
+        <div class="card-title">📉 Skills Most Candidates Are Missing</div>
+        <div class="tags-wrap">
+            {% for skill in results.insights.commonly_missing_skills %}
+            <span class="tag tag-missing" style="font-size:0.85rem;padding:0.3rem 0.8rem;">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin:1.5rem 0;" class="fade-up">
+        <a href="/" class="btn btn-primary">🔄 Start Over</a>
+        <a href="/#rank-section" class="btn btn-outline">📂 Rank More</a>
+        <button onclick="window.print()" class="btn btn-outline">🖨️ Print</button>
+    </div>
+</div>
+{% endblock %}

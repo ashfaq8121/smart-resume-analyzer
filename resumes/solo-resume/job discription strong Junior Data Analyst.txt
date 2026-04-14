@@ -1,0 +1,22 @@
+Junior Data Analyst - Microsoft Fabric Team
+E-commerce Analytics Division
+
+Responsibilities:
+- Analyze sales datasets using Python (pandas, NumPy) to identify revenue trends
+- Build interactive Power BI dashboards for business stakeholders
+- Clean and preprocess .csv/.parquet files for reporting
+- Write MySQL queries to extract customer data from databases
+- Create data visualizations showing KPIs, sales forecasts, and customer segmentation
+- Collaborate with product teams to translate business requirements into analytics solutions
+
+Requirements:
+- Proficiency in Python data libraries (pandas, NumPy)
+- Experience building Power BI dashboards (DAX, Power Query)
+- Strong SQL/MySQL skills for data extraction
+- Familiarity with data cleaning and preprocessing workflows
+- B.Tech CSE or related field (final year OK)
+- GitHub portfolio with analytics projects
+
+Location: Hyderabad, Telangana (Remote OK)
+
+
