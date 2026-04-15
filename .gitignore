@@ -1,8 +1,4 @@
-flask_sessions/
-*.db
-static/generated_resumes/
-desktop-tutorial/
-# Python
+javascript# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -27,6 +23,14 @@ env/
 static/uploads/*
 !static/uploads/.gitkeep
 
+# Flask sessions and uploads
+flask_sessions/
+static/generated_resumes/
+
+# Database (use PostgreSQL on Render, not this file)
+*.db
+resume_analyzer.db
+
 # IDE files
 .vscode/
 .idea/
@@ -41,3 +45,10 @@ htmlcov/
 
 # NLTK downloaded data (large, should be downloaded at deploy time)
 nltk_data/
+
+# Anaconda
+.conda/
+
+# Large ML model cache (Render will download this automatically)
+.cache/
+sentence_transformers/
