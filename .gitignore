@@ -52,3 +52,17 @@ nltk_data/
 # Large ML model cache (Render will download this automatically)
 .cache/
 sentence_transformers/
+
+# ML model caches
+models/
+*.bin
+*.pt
+
+# Flask instance config
+instance/
+.flaskenv
+
+# Hugging Face cache
+.huggingface/
+.cache/huggingface/
+.cache/torch/

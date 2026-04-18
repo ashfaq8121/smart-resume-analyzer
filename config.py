@@ -43,12 +43,16 @@ class Config:
 #     DEBUG      = False
 #     SECRET_KEY = os.environ.get('SECRET_KEY')   # must be set in environment
 
+# class ProductionConfig(Config):
+#     DEBUG = False
+#     SECRET_KEY = os.environ.get('SECRET_KEY') or 'CHANGE-ME-IN-PRODUCTION'
+# class DevelopmentConfig(Config):
+#     DEBUG = True
 class ProductionConfig(Config):
     DEBUG = False
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'CHANGE-ME-IN-PRODUCTION'
-class DevelopmentConfig(Config):
-    DEBUG = True
-
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'fallback-change-me'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        f'sqlite:///{os.path.join(BASE_DIR, "resume_analyzer.db")}'
 
 config = {
     'development': DevelopmentConfig,
