@@ -326,7 +326,12 @@ MIT License — free to use, modify, and distribute.
 ---
 
 ----
+
+
  IF YOU WANT TO DOWNLOAD  TEH FOLDER -https://github.com/ashfaq8121/smart-resume-analyzer.git
+
+
+ ----
 
 ## 👨‍💻 Author
 MOHAMMAD ASHFAQ UR RAHMAN
