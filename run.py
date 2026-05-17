@@ -1,15 +1,12 @@
 from app import create_app
+import os
 
 app = create_app("development")
 
 if __name__ == "__main__":
-    
-    print("=" * 55)
-    print("🧠 Smart Resume Analyzer")
-    print("=" * 55)
-    print("✅ Server starting...")
-    print("🌐 Open: http://127.0.0.1:5000")
-    print("🛑 Stop: Press CTRL+C")
-    print("=" * 55)
-    
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )
