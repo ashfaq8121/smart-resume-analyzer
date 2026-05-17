@@ -1,7 +1,8 @@
+from app import create_app
+
+app = create_app("development")
+
 if __name__ == "__main__":
-    from app import create_app
-    
-    app = create_app("development")
     
     print("=" * 55)
     print("🧠 Smart Resume Analyzer")
